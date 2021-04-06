@@ -55,7 +55,7 @@
 #define mbedtls_fprintf    fprintf
 #define mbedtls_printf     printf
 #endif
-#define read_size 16384 //(Bytes) //1024 // 2048 // 16384
+#define read_size 2048 //(Bytes) //2048 // 8192 // 16384
 #include <stdlib.h>
 #include <string.h>
 
@@ -86,7 +86,7 @@ mbedtls_ssl_config conf;
 mbedtls_x509_crt srvcert;
 mbedtls_pk_context pkey;
 static WWDG_HandleTypeDef   WwdgHandle;
-int index_ = 0;
+int index_ = 0x1c0;
 //static unsigned char password_sha[] ={0xcf,0x7b,0x02,0x03,0xd8,0x1d,0x7c,0xf4,0x52,0x54,0xb7,0x06,0x4c,0x8a,0x7f,0x75,0xc8,0x08,0x1e,0x06,0xf0,0x96,0xb4,0x14,0x1c,0xf6,0xd5,0x48,0xc3,0x29,0x6a,0x47};
 #if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_context cache;
@@ -105,9 +105,9 @@ void SSL_Server(void const *argument)
 {
   mbedtls_printf( "  Startup Time =%d\n", (int)HAL_GetTick());
   int ret, len;
-  int index_ = 0;
+  int index_ = 0x1c0;
   const unsigned char *HashBuffer_1;
-  MY_FLASH_SetSectorAddrs(0, 0x080001c0);
+  MY_FLASH_SetSectorAddrs(0, 0x08000000);
   static unsigned char rData[read_size];
   static unsigned char wData[6]= {0x55,0x55,0x85,0x55,0x45,0x55};
 
@@ -363,11 +363,11 @@ reset:
 	 }
 
 	 index_=index_+read_size;
-	 if(index_ >= 0x181b0 ){
+	 if(index_ == 0x1C1C0 ){
 
 		 BSP_LED_Toggle(LED3);
 
-		 index_ =0;
+		 index_ =0x1c0;
 	 }
 
 	 //Measuring Hashing a Block [End]
@@ -525,7 +525,7 @@ void Watchdog(void const *argument)
 	    /* Refresh WWDG: update counter value to 127, the refresh window is:
 	 between 34 ms (~728 * (127-80)) and 46 ms (~728 * 64) */
 if (status == 0) {
-	 index_ =0;
+	 index_ =0x1c0;
 	    if (HAL_WWDG_Refresh(&WwdgHandle) != HAL_OK)
 	    {
 
